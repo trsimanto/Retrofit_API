@@ -7,6 +7,9 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 
 import okhttp3.ResponseBody;
@@ -86,18 +89,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                String s = null;
                 try {
                     if (response.code() == 201) {
-                        String s = response.body().string();
-                        Toast.makeText(MainActivity.this, s, Toast.LENGTH_LONG).show();
-                    }
-                    else
-                    {
-                        String s = response.errorBody().string();
-                        Toast.makeText(MainActivity.this, s, Toast.LENGTH_LONG).show();
+                        s = response.body().string();
+                    } else {
+                        s = response.errorBody().string();
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
+                }
+                if (s != null) {
+                    try {
+                        JSONObject jsonObject=new JSONObject(s);
+                        Toast.makeText(MainActivity.this, jsonObject.getString("massage"), Toast.LENGTH_SHORT).show();
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
 
             }
